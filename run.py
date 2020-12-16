@@ -7,7 +7,7 @@ from grid_trader import Trader
 class HuobiTrader(Trader):
     def __init__(self, apikey, secretkey):
         super().__init__()
-        self.huobi = ccxt.huobipro({
+        self.ccxt_exchange = ccxt.huobipro({
             'apiKey': apikey,
             'secret': secretkey,
         })
