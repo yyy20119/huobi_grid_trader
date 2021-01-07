@@ -109,7 +109,7 @@ class HuobiTrader(Trader):
 
                         # 在止盈处下卖单
                         sell_side = 'sell'
-                        sell_price = price + 2.5
+                        sell_price = price + 10
                         take_sell_order = self.create_order(order_symbol, order_type, sell_side, 0.998 * amount,
                                                             sell_price)
                         takeorder_id = take_sell_order['id']
@@ -121,7 +121,7 @@ class HuobiTrader(Trader):
 
                         # 在低一档的价格下买单
                         buy_side = 'buy'
-                        buy_price = price - 2.5
+                        buy_price = price - 10
                         available_usdt = balance['USDT']['free']
                         if available_usdt < buy_price * order_amount:
                             logging.info('可用余额不足，无法下新的买单')
@@ -137,7 +137,7 @@ class HuobiTrader(Trader):
 
                     # 当前价格远大于所挂买单时，撤销原有的买单并重新根据当前价格下新的买单
                     elif order_status == 'open' and len(results) == 1:
-                        if last_price - price >= 5:
+                        if last_price - price >= 20:
                             logging.info('当前价格远大于所挂买单，撤销原有的买单！')
                             # 删除未成交的买单及db记录
                             try:
@@ -177,7 +177,7 @@ class HuobiTrader(Trader):
 
                         # 在回调的地方下买单
                         buy_side = 'buy'
-                        buy_price = last_price - 2.5
+                        buy_price = last_price - 10
                         take_buy_order = self.create_order(order_symbol, order_type, buy_side, order_amount, buy_price)
                         takeorder_id = take_buy_order['id']
                         sql = f"""INSERT INTO order_info(order_id,side, price, amount, related_id) VALUES ('{takeorder_id}', '{buy_side}', {buy_price}, {order_amount}, '{takeorder_id}')"""
@@ -196,4 +196,4 @@ class HuobiTrader(Trader):
 if __name__ == '__main__':
     huobi_trader = HuobiTrader(apikey='', secretkey='')
     huobi_trader.connect_db(host='127.0.0.1', user='root', password='123456', database='huobi')
-    huobi_trader.trade_forerver(order_symbol='ETH/USDT', order_amount=0.06, base_usdt=500)
+    huobi_trader.trade_forerver(order_symbol='ETH/USDT', order_amount=0.02, base_usdt=1000)
